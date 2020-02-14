@@ -48,7 +48,7 @@ module.exports = (fn, options = {}) => {
 		// the timeout will call the later function when it executes
 		timeout = setTimeout(later, options.wait || 0);
 		
-		// If callNow is true, the result is the result of calling the fn with the args array
+		// If callNow is true, call fn immediately with args
 		if (callNow) {
 			result = fn.apply(context, args);
 		}
@@ -58,10 +58,12 @@ module.exports = (fn, options = {}) => {
 		
 	}; // END debounced
 	
-	// debounced will mimic fn
+	// debounced will mimic fn, essentially adding the props of debounced 
+	// to the passed in function and returning debounced instead of the original fn
 	mimicFn(debounced, fn);
 	
 	// Add a function to a cancel property on the debounced / fn function
+	// This could be used within a script to completely cancel execution of the fn
 	debounced.cancel = () => {
 		// If timeout is truthy, clear it and reset to null
 		if (timeout) {
