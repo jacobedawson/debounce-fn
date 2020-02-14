@@ -27,11 +27,12 @@ module.exports = (fn, options = {}) => {
 		const later = () => {
 			// set the timeout variable to null
 			timeout = null;
-			// If there is no immediate property on the options object
+			// If there is no immediate property on the options object or if it is falsy
 			if (!options.immediate) {
 				// Assign the value of calling fn to the result variable
 				// Use apply to pass in the array of args, with a context
 				// of this saved from the surrounding function
+				// the later function has access to timeout, options, result, fn, context & args through closure
 				result = fn.apply(context, args);
 			}
 		}; // END later
@@ -39,14 +40,19 @@ module.exports = (fn, options = {}) => {
 		// Create a Boolean of true if the options object has the immediate property
 		// and the value of timeout is still null
 		const callNow = options.immediate && !timeout;
+		
 		clearTimeout(timeout);
+		
 		// clear and reset a timeout function that will either be called 
 		// after options.wait, or after the following synchronous code executes
+		// the timeout will call the later function when it executes
 		timeout = setTimeout(later, options.wait || 0);
+		
 		// If callNow is true, the result is the result of calling the fn with the args array
 		if (callNow) {
 			result = fn.apply(context, args);
 		}
+		
 		// Return the result
 		return result;
 		
